@@ -2,6 +2,7 @@ from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from scrapy.http.request import Request
 from scrapy.conf import settings
+from HTMLParser import HTMLParser
 
 from tripadvisorcom_scraper.items import ReviewItem
 from tripadvisorcom_scraper.spiders.crawlerhelper import get_parsed_string
@@ -12,12 +13,14 @@ import pymongo
 import re
 import time
 
-class ReviewsCrawler(BaseSpider):
+class ReviewsCrawler(BaseSpider, HTMLParser):
 
     name = 'reviews'
     allowed_domains = ['tripadvisor.com',]
 
     def __init__(self):
+
+        HTMLParser.__init__(self)
 
         conn = pymongo.Connection(settings['MONGODB_SERVER'],
             settings['MONGODB_PORT'])
@@ -39,6 +42,9 @@ class ReviewsCrawler(BaseSpider):
 
         for rec in self.collection.find({'item_type' : 'hotel'}):
             yield rec['url']
+
+    def handle_data(self, data):
+        self.parsed_text += data
 
     def parse(self, response):
 
@@ -83,8 +89,11 @@ class ReviewsCrawler(BaseSpider):
                 reviewer_locality = clean_parsed_string(get_parsed_review_element(
                     raw_review, 'div//div[contains(@class, "member_info")]//div[contains(@class, "location")]/text()'))
                 ri['reviewer_locality'] = reviewer_locality.title() if reviewer_locality else None
-                ri['content'] = clean_parsed_string(get_parsed_review_element(
-                    raw_review, 'div//div[contains(@class, "entry")]//p/text()'))
+                data = clean_parsed_string(get_parsed_review_element(
+                    raw_review, 'div//div[contains(@class, "entry")]//p'))
+                self.parsed_text = ''
+                self.feed(data)
+                ri['content'] = self.parsed_text
                 rating_text = clean_parsed_string(get_parsed_review_element(
                     raw_review, 'div//div[contains(@class, "rating reviewItemInline")]//img/@alt'))
                 ri['rating'] = int(rating_text.split()[0]) if rating_text else None
