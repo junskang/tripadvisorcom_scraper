@@ -49,3 +49,4 @@ class ReviewItem(Item):
     reviewer_locality = Field()
     content = Field()
     rating = Field()
+    recommendations = Field()

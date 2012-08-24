@@ -88,6 +88,7 @@ class ReviewsCrawler(BaseSpider):
                 rating_text = clean_parsed_string(get_parsed_review_element(
                     raw_review, 'div//div[contains(@class, "rating reviewItemInline")]//img/@alt'))
                 ri['rating'] = int(rating_text.split()[0]) if rating_text else None
+                ri['recommendations'] = raw_review.select('div//li[contains(@class, "recommend-answer")]').extract()
 
                 print '%s:%s:%s' % (ri['review_id'], ri['reviewer_name'], ri['review_date'])
 
