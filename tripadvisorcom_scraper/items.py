@@ -31,6 +31,7 @@ class HotelItem(Item):
     country = Field()
     rating = Field()
     review_count = Field()
+    price_range = Field()
     url = Field()
 
 class ReviewItem(Item):

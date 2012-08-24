@@ -77,6 +77,9 @@ class HotelsCrawler(BaseSpider):
                 hxs, '//div[contains(@rel, "v:rating")]//img[contains(@class, "sprite-ratings")]/@alt'))
             review_count = clean_parsed_string(get_parsed_string(
                 hxs, '//div[contains(@class, "rs rating")]//span[contains(@property, "v:count")]/text()'))
+            price_range = clean_parsed_string(get_parsed_string(
+                hxs, '//span[contains(@property, "v:pricerange")]/text()'))
+            hi['price_range'] = len(price_range) if price_range else None
             # Some review counts are written '1 review' instead of just '1123'
             # So split the numerical part and convert into integer
             hi['review_count'] = int(review_count.split()[0]) if review_count else None
