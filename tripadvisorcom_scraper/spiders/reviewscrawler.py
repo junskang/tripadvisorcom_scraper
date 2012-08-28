@@ -37,8 +37,22 @@ class ReviewsCrawler(BaseSpider):
         # {'item_type' : 'hotels', 'locality' : 'New York City'}
         # will crawl for hotels only in New York City
 
-        for rec in self.collection.find({'item_type' : 'hotel'}):
+        # Specific part: To crawl only US Regions
+
+        usregions = []
+
+        with open('usregions.out') as fin:
+            for line in fin:
+                usregions.append(line.replace('\n', ''))
+
+        for rec in self.collection.find({'item_type' : 'hotel', 'region' : { '$in' : usregions}}):
             yield rec['url']
+
+        # End of specific part
+
+        # Un-comment the region below if the region above is removed.
+        # for rec in self.collection.find({'item_type' : 'hotel'}):
+        #     yield rec['url']
 
     def parse(self, response):
 
