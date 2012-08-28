@@ -8,7 +8,7 @@ USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 
 MONGODB_SERVER = 'localhost'
 MONGODB_PORT = 27017
-MONGODB_DB = 'ta'
+MONGODB_DB = 'ta_new'
 MONGODB_COLLECTION = 'ta_complete'
 
 ITEM_PIPELINES = ['tripadvisorcom_scraper.pipelines.TripadvisorcomScraperPipeline',]
